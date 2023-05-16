@@ -20,6 +20,13 @@ class Server():
         self.data[user] = {'pos': [500, 500], 'color': color}
         return {'code': 200, 'error': ''}
 
+    def delUser(self, user):
+        if user not in self.users:
+            return {'code': -1, 'error': 'user not exists'}
+        self.users.remove(user)
+        del self.data[user]
+        return {'code': 200, 'error': ''}
+
     def move(self, user, pos):
         if user not in self.users:
             return {'code': -1, 'error': 'user not exists'}
@@ -36,14 +43,28 @@ serv = Server()
 
 @app.route('/add', methods=['POST'])
 def addUser():
-    data = json.loads(request.get_json())
+    data = request.get_json()
+    if type(data) == str:
+        data = json.loads(data)
     resp = serv.addUser(data['name'], data['color'])
+    return json.dumps(resp)
+
+
+@app.route('/del', methods=['POST'])
+def delUser():
+    data = request.get_json()
+    if type(data) == str:
+        data = json.loads(data)
+
+    resp = serv.delUser(data['name'])
     return json.dumps(resp)
 
 
 @app.route('/tick', methods=['POST'])
 def tick():
-    data = json.loads(request.get_json())
+    data = request.get_json()
+    if type(data) == str:
+        data = json.loads(data)
     resp = serv.move(data['name'], data['pos'])
     return json.dumps(resp)
 
@@ -55,4 +76,4 @@ def stat():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5050))
-    app.run(host='26.84.242.241', port=port)
+    app.run(host='0.0.0.0', port=port)

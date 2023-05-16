@@ -2,11 +2,12 @@ import tkinter as tk
 import random as rnd
 import string
 import json
+import threading
 from requests import post, get
 from tkinter import Canvas
 
-URL = 'http://26.53.0.4:5050'
-FPS = 30
+URL = 'http://127.0.0.1:5050'
+FPS = 60
 
 app = tk.Tk()
 app.geometry('1000x1000')
@@ -51,18 +52,32 @@ class Player():
         self.canvas.coords(self.object, self.pos[0], self.pos[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1])
 
         if self.t % (FPS // 3) == 0:
-            data = {
-                'name': self.name,
-                'pos': self.pos
-            }
-            resp = post(URL + '/tick', json=json.dumps(data)).json()
+            thread = threading.Thread(target=self.__thread_request_for_stat())
+            thread.start()
 
-            if resp['code'] != 200:
-                print('Что то не так в tick', resp['error'])
-                exit(-1)
 
-            resp = get(URL + '/stat').json()
-            self.__serv_stat(resp)
+    def out(self):
+        data = {'name': self.name}
+        resp = post(URL + '/del', json=json.dumps(data)).json()
+
+        if resp['code'] != 200:
+            print('Что то не так в delUser', resp['error'])
+            exit(-1)
+
+
+    def __thread_request_for_stat(self):
+        data = {
+            'name': self.name,
+            'pos': self.pos
+        }
+        resp = post(URL + '/tick', json=json.dumps(data)).json()
+
+        if resp['code'] != 200:
+            print('Что то не так в tick', resp['error'])
+            exit(-1)
+
+        resp = get(URL + '/stat').json()
+        self.__serv_stat(resp)
 
     def __serv_stat(self, data: dict):
         if self.name in data.keys():
@@ -76,9 +91,6 @@ class Player():
             if key not in players.keys():
                 players[key] = self.canvas.create_oval(*val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1], fill=val['color'])
             self.canvas.coords(players[key], *val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1])
-
-
-
     def __create_name(self):
         letters = string.ascii_lowercase
         rand_string = ''.join(rnd.choice(letters) for i in range(20))
@@ -104,6 +116,8 @@ class Canvas(tk.Canvas):
 
 canvas = Canvas(app)
 player = Player(canvas)
+
+app.protocol("WM_DELETE_WINDOW", player.out)
 
 
 canvas.pack()
