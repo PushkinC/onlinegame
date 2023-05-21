@@ -2,17 +2,14 @@ import tkinter as tk
 import random as rnd
 import string
 import json
-import threading
-from requests import Session
+from requests import post, get, Session
 from tkinter import Canvas
 from CustomTimer import Timer
 
 URL = 'https://d1fc-95-31-180-174.ngrok-free.app'
-FPS = 30
-TPS = 10
+FPS = 60
 
 app = tk.Tk()
-app.title('main')
 app.geometry('1000x1000')
 
 players = {}
@@ -55,39 +52,47 @@ class Player():
     def tick(self):
         self.t += 1
         self.canvas.coords(self.object, self.pos[0], self.pos[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1])
+        if self.t % (FPS // 3) == 0:
+            self.timer.start()
+            data = {
+                'name': self.name,
+                'pos': self.pos
+            }
+            resp = self.session.post(url=URL + '/tick', json=json.dumps(data)).json()
 
-        if self.t % (FPS // TPS) == 0:
-            if threading.active_count() < 2:
-                self.timer.start()
-                thread = threading.Thread(target=self.__thread_request_for_stat)
-                thread.start()
-                self.timer.stop()
+            if resp['code'] != 200:
+                print('Что то не так в tick', resp['error'])
+                exit(-1)
+
+            resp = self.session.get(url=URL + '/stat').json()
+            self.__serv_stat(resp)
+            self.timer.stop()
+
 
 
     def out(self):
         data = {'name': self.name}
         resp = self.session.post(url=URL + '/del', json=json.dumps(data)).json()
-        self.timer.save('stat/statThread.txt')
+        self.timer.save('stat/statsync.txt')
 
         if resp['code'] != 200:
             print('Что то не так в delUser', resp['error'])
             exit(-1)
 
 
-    def __thread_request_for_stat(self):
-        data = {
-            'name': self.name,
-            'pos': self.pos
-        }
-
-        resp = self.session.post(url=URL + '/tick', json=json.dumps(data)).json()
-
-        if resp['code'] != 200:
-            print('Что то не так в tick', resp['error'])
-            exit(-1)
-
-        resp = self.session.get(url=URL + '/stat').json()
-        self.__serv_stat(resp)
+    # def __thread_request_for_stat(self):
+    #     data = {
+    #         'name': self.name,
+    #         'pos': self.pos
+    #     }
+    #     resp = post(URL + '/tick', json=json.dumps(data)).json()
+    #
+    #     if resp['code'] != 200:
+    #         print('Что то не так в tick', resp['error'])
+    #         exit(-1)
+    #
+    #     resp = get(URL + '/stat').json()
+    #     self.__serv_stat(resp)
 
     def __serv_stat(self, data: dict):
         if self.name in data.keys():
@@ -97,38 +102,14 @@ class Player():
             print('No other players')
             return
 
-        del_data = []
-        for key, val in players.items():
-            if key in data.keys():
-                self.canvas.coords(val, *data[key]['pos'], data[key]['pos'][0] + self.size[0],
-                                   data[key]['pos'][1] + self.size[1])
-                del_data.append(key)
-                continue
-            del players[key]
-
-        for i in del_data:
-            del data[key]
-
         for key, val in data.items():
-            players[key] = self.canvas.create_oval(*val['pos'], val['pos'][0] + self.size[0],
-                                    val['pos'][1] + self.size[1], fill=val['color'])
-
-
-
-
-
-        # for key, val in data.items():
-        #     if key not in players.keys():
-        #         players[key] = self.canvas.create_oval(*val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1], fill=val['color'])
-        #     self.canvas.coords(players[key], *val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1])
-
-
+            if key not in players.keys():
+                players[key] = self.canvas.create_oval(*val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1], fill=val['color'])
+            self.canvas.coords(players[key], *val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1])
     def __create_name(self):
         letters = string.ascii_lowercase
         rand_string = ''.join(rnd.choice(letters) for i in range(20))
         return rand_string
-
-
     def __create_random_color(self) -> str:
         r = hex(rnd.randrange(0, 200))[2:]
         g = hex(rnd.randrange(0, 200))[2:]

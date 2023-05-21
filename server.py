@@ -13,11 +13,14 @@ class Server():
         self.data = {}
 
     def addUser(self, user, color):
+        print('add', user, color)
         if user in self.users:
+            print('add error')
             return {'code': -1, 'error': 'user already exists'}
 
         self.users.append(user)
         self.data[user] = {'pos': [500, 500], 'color': color}
+        print('add sacc')
         return {'code': 200, 'error': ''}
 
     def delUser(self, user):
