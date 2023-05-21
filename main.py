@@ -9,7 +9,7 @@ from CustomTimer import Timer
 
 URL = 'https://d1fc-95-31-180-174.ngrok-free.app'
 FPS = 30
-TPS = 10
+RPS = 30
 
 app = tk.Tk()
 app.title('main')
@@ -20,7 +20,8 @@ players = {}
 
 class Player():
     def __init__(self, canvas:Canvas):
-        self.timer = Timer()
+        self.timer_ping = Timer()
+        self.timer_fps = Timer()
         self.session = Session()
         self.name = self.__create_name()
         self.color = self.__create_random_color()
@@ -30,6 +31,7 @@ class Player():
         self.object = self.canvas.create_oval(self.pos[0], self.pos[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1], fill=self.color)
         self.__in_server_init()
         self.t = 0
+
 
     def __in_server_init(self):
         data = {
@@ -53,26 +55,32 @@ class Player():
                 self.pos[1] += 5
 
     def tick(self):
+        if self.t % FPS == 0:
+            self.timer_fps.start()
+
+            thread = threading.Thread(target=self.__get_ping)
+            thread.start()
+
         self.t += 1
         self.canvas.coords(self.object, self.pos[0], self.pos[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1])
 
-        if self.t % (FPS // TPS) == 0:
-            if threading.active_count() < 2:
-                self.timer.start()
-                thread = threading.Thread(target=self.__thread_request_for_stat)
-                thread.start()
-                self.timer.stop()
+        if self.t % (FPS // RPS) == 0: # Отправка и получение координат игроков
+            thread = threading.Thread(target=self.__thread_request_for_stat)
+            thread.start()
+
+        if self.t % FPS == 0:
+            label_fps['text'] =f'fps: {int(round(self.timer_fps.stop(), 2)) * FPS}'
 
 
     def out(self):
         data = {'name': self.name}
         resp = self.session.post(url=URL + '/del', json=json.dumps(data)).json()
-        self.timer.save('stat/statThread.txt')
+        # self.timer.save('stat/statThread.txt')
 
         if resp['code'] != 200:
             print('Что то не так в delUser', resp['error'])
-            exit(-1)
-
+        app.quit()
+        exit(200)
 
     def __thread_request_for_stat(self):
         data = {
@@ -94,7 +102,7 @@ class Player():
             del data[self.name]
 
         if len(data.keys()) == 0:
-            print('No other players')
+            # print('No other players')
             return
 
         del_data = []
@@ -122,12 +130,15 @@ class Player():
         #         players[key] = self.canvas.create_oval(*val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1], fill=val['color'])
         #     self.canvas.coords(players[key], *val['pos'], val['pos'][0] + self.size[0], val['pos'][1] + self.size[1])
 
+    def __get_ping(self) -> float:
+        self.timer_ping.start()
+        self.session.get(url=URL + '/ping')
+        label_ping['text'] =f'ping: {int(round(self.timer_ping.stop(), 4) * 1000)}'
 
-    def __create_name(self):
+    def __create_name(self) -> str:
         letters = string.ascii_lowercase
         rand_string = ''.join(rnd.choice(letters) for i in range(20))
         return rand_string
-
 
     def __create_random_color(self) -> str:
         r = hex(rnd.randrange(0, 200))[2:]
@@ -148,13 +159,22 @@ class Canvas(tk.Canvas):
         super().__init__(app, width=width, height=height)
 
 
+label_fps = tk.Label()
+label_ping = tk.Label()
+label_fps['text'] = 'fps: 00'
+label_ping['text'] = 'ping: 00'
+
+
 canvas = Canvas(app)
 player = Player(canvas)
 
 app.protocol("WM_DELETE_WINDOW", player.out)
 
 
+label_fps.pack()
+label_ping.pack()
 canvas.pack()
+
 
 
 def game():

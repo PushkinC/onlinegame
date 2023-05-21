@@ -76,6 +76,10 @@ def tick():
 def stat():
     return json.dumps(serv.getData())
 
+@app.route('/ping', methods=['GET'])
+def ping():
+    return json.dumps({'code': 200, 'error': ''})
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5050))
