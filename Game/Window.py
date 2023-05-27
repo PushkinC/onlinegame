@@ -15,6 +15,7 @@ class Window(tk.Tk):
         self.canvas = tk.Canvas(self, width=1000, height=1000)
         self.tick_from_start = 0
         self.chars = {'w': False, 'a': False, 's': False, 'd': False}
+        self.cn = 0
 
         # self.canvas.create_rectangle(0, 0, 1000, 1000, fill='red')
 
@@ -49,7 +50,7 @@ class Window(tk.Tk):
 
 
     def game(self):
-        self.timer_fps.start()
+        self.cn += 1
         self.tick_from_start += 1
 
         if  self.tick_from_start % FPS == 0: # Замер ping
@@ -69,7 +70,11 @@ class Window(tk.Tk):
         self.player.tick()
 
         if self.tick_from_start % FPS == 0: # Замер fps
-            self.label_fps['text'] = f'fps: {int(round(self.timer_fps.stop(), 2)) * FPS}'
+            self.label_fps['text'] = f'fps: {int(self.cn / self.timer_fps.stop())}'
+            self.cn = 0
+            self.timer_fps.start()
+
+
 
 
         self.after(1000 // FPS, self.game)
@@ -85,6 +90,8 @@ class Window(tk.Tk):
             print('Что то не так в delUser', resp['error'])
         self.quit()
         exit(200)
+
+
 
     def __get_ping(self):
         self.timer_ping.start()
@@ -139,6 +146,10 @@ class Window(tk.Tk):
     def keyUp(self, e):
         key = e.char
         self.chars[key] = False
+
+
+
+
 
 
 
