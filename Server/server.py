@@ -9,36 +9,33 @@ app = flask.Flask(__name__)
 
 class Server():
     def __init__(self):
-        self.users = []
-        self.data = {}
+        self.players = {}
 
-    def addUser(self, user, color):
-        print('add', user, color)
-        if user in self.users:
+    def add_User(self, id, color):
+        print('add', id, color)
+        if id in self.players:
             print('add error')
             return {'code': -1, 'error': 'user already exists'}
 
-        self.users.append(user)
-        self.data[user] = {'pos': [500, 500], 'color': color}
+        self.players[id] = {'pos': [500, 500], 'color': color}
         print('add sacc')
         return {'code': 200, 'error': ''}
 
-    def delUser(self, user):
-        if user not in self.users:
+    def del_User(self, id):
+        if id not in self.players:
             return {'code': -1, 'error': 'user not exists'}
-        self.users.remove(user)
-        del self.data[user]
+        del self.players[id]
         return {'code': 200, 'error': ''}
 
-    def move(self, user, pos):
-        if user not in self.users:
+    def move(self, id, pos):
+        if id not in self.players:
             return {'code': -1, 'error': 'user not exists'}
 
-        self.data[user]['pos'] = pos
+        self.players[id]['pos'] = pos
         return {'code': 200, 'error': ''}
 
-    def getData(self):
-        return self.data
+    def get_Data(self):
+        return self.players
 
 
 serv = Server()
@@ -49,7 +46,7 @@ def addUser():
     data = request.get_json()
     if type(data) == str:
         data = json.loads(data)
-    resp = serv.addUser(data['name'], data['color'])
+    resp = serv.add_User(data['id'], data['color'])
     return json.dumps(resp)
 
 
@@ -59,7 +56,7 @@ def delUser():
     if type(data) == str:
         data = json.loads(data)
 
-    resp = serv.delUser(data['name'])
+    resp = serv.del_User(data['id'])
     return json.dumps(resp)
 
 
@@ -68,13 +65,13 @@ def tick():
     data = request.get_json()
     if type(data) == str:
         data = json.loads(data)
-    resp = serv.move(data['name'], data['pos'])
+    resp = serv.move(data['id'], data['pos'])
     return json.dumps(resp)
 
 
 @app.route('/stat', methods=['GET'])
 def stat():
-    return json.dumps(serv.getData())
+    return json.dumps(serv.get_Data())
 
 @app.route('/ping', methods=['GET'])
 def ping():
