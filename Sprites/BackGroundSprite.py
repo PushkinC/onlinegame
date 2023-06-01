@@ -1,0 +1,24 @@
+import pygame
+import random as rnd
+
+
+class BackGroundSprite(pygame.sprite.Sprite):
+    def __init__(self, color):
+        super().__init__()
+
+        self.color = color
+        if color == -1:
+            self.color = self.__create_random_color()
+
+        self.size = 100
+        self.background = pygame.Surface((self.size, self.size))
+        self.background.set_colorkey('black')
+        pygame.draw.circle(self.background, self.color, (self.size // 2, self.size // 2), self.size // 2)
+
+
+    def __create_random_color(self) -> tuple:
+        r = rnd.randrange(60, 200)
+        g = rnd.randrange(60, 200)
+        b = rnd.randrange(60, 200)
+        return r, g, b
+
