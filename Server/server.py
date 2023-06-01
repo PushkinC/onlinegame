@@ -10,6 +10,7 @@ app = flask.Flask(__name__)
 class Server():
     def __init__(self):
         self.players = {}
+        self.retired_players = []
 
     def add_User(self, id, color):
         print('add', id, color)

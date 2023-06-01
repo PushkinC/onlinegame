@@ -18,3 +18,10 @@ class Enemy:
     def set_pos(self, x, y):
         self.pos = [x, y]
 
+
+
+
+class Enemyes(list):
+    def remove(self, __value: Enemy) -> None:
+        __value.canvas.delete(__value.object)
+        super().remove(__value)

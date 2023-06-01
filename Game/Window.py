@@ -3,7 +3,9 @@ import threading
 import json
 from CustomModules.CustomTimer import Timer
 from Player import Player
-from Enemy import Enemy
+from Enemy import Enemy, Enemyes
+from Game import Game
+
 from requests import Session
 from const import *
 
@@ -26,7 +28,7 @@ class Window(tk.Tk):
         self.label_fps = tk.Label()
         self.label_ping = tk.Label()
         self.player = Player(self.canvas, self.session)
-        self.enemies: list[Enemy] = []
+        self.enemies :list[Enemy] = Enemyes()
 
         self.__setup(title, geometry)
         self.game()
@@ -39,6 +41,7 @@ class Window(tk.Tk):
         self.label_ping['text'] = 'ping: 00'
 
         self.protocol("WM_DELETE_WINDOW", self.out)
+        self.bind("<FocusOut>", self.focus_out)
 
         self.label_fps.pack()
         self.label_ping.pack()
@@ -91,7 +94,8 @@ class Window(tk.Tk):
         self.quit()
         exit(200)
 
-
+    def focus_out(self, e):
+        self.chars = {'w': False, 'a': False, 's': False, 'd': False}
 
     def __get_ping(self):
         self.timer_ping.start()
@@ -119,10 +123,9 @@ class Window(tk.Tk):
 
         if len(data.keys()) == 0:
             # print('No other players')
+            for i in self.enemies:
+                self.enemies.remove(i)
             return
-
-
-
 
         del_data = []
         for i in self.enemies:
@@ -130,14 +133,22 @@ class Window(tk.Tk):
                 self.canvas.coords(i.object, *data[i.id]['pos'], data[i.id]['pos'][0] + i.size,
                                    data[i.id]['pos'][1] + i.size)
                 del_data.append(i.id)
-                continue
-            del players[i.id]
+            else:
+                self.enemies.remove(i)
 
         for i in del_data:
             del data[i]
 
         for key, val in data.items():
             self.enemies.append(Enemy(self.canvas, color=val['color'], pos=val['pos'], id=key, size=100))
+
+
+
+        # a = []
+        # for i in self.enemies:
+        #     a.append(i.id)
+        # print(a)
+        # print(len(self.enemies))
 
     def keyDown(self, e):
         key = e.char

@@ -52,13 +52,6 @@ class Player():
 
 
 
-
-
-
-
-
-
-
     def __create_id(self) -> str:
         letters = string.ascii_lowercase
         rand_string = ''.join(rnd.choice(letters) for i in range(20))
