@@ -18,6 +18,7 @@ class Player(SimpleSprite):
         self.chars = {}
         self.mouse = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 'r': 0}
         self.weapon = AK_47(bc)
+        self.hp = 100
 
 
     def __create_id(self) -> str:
@@ -26,13 +27,15 @@ class Player(SimpleSprite):
         return rand_string
 
     def update(self, *args: Any, **kwargs: Any) -> None:
+        if self.hp <= 0:
+            return
+
         for key, val in self.chars.items():  # Двигаю персонажа
             if val: self.move(key)
 
         x, y = pygame.mouse.get_pos()  # Вычисляю угол поворота и поворачиваю
         angle = int(math.degrees(math.atan2(-self.rect.centerx + x, -self.rect.centery + y)) + 180)
         self.rotate(angle)
-
 
         self.weapon.update(self.mouse, (self.rect.center, angle, self.size))
 

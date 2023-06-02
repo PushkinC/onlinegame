@@ -11,7 +11,7 @@ class StatusMonitor:
 
     def draw(self, player: Player) -> pygame.Surface:
         if self.visibility:
-            text = [f'HP: {100}',
+            text = [f'HP: {player.hp}',
                     f'Bullet: {player.weapon.magazine.count}']
             stat = render_multiline_text(self.font, text, True, (0, 255, 0), 5)
             stat_rect = stat.get_rect()

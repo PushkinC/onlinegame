@@ -14,6 +14,7 @@ class StatisticsMonitor:
             text = [f'FPS: {fps}, PING: {ping}',
                     f'Angle: {player.angle}',
                     f'Position: X: {player.rect.centerx}, Y: {player.rect.centery}',
+                    f'P',
                     f'Your_ID: {player.id}']
             stat = render_multiline_text(self.font, text, True, (0, 255, 0), 5)
             stat_rect = stat.get_rect()

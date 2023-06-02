@@ -11,7 +11,6 @@ class Server():
     def __init__(self):
         self.players = {}
         self.retired_players = []
-        self.bullets = {}
 
     def add_User(self, id, color):
         print('add', id, color)
@@ -34,7 +33,7 @@ class Server():
             return {'code': -1, 'error': 'user not exists'}
 
         self.players[id]['pos'] = pos
-        self.bullets[id] = bullets
+        self.players[id]['bullets'] = bullets
         return self.get_Data()
 
     def get_Data(self):

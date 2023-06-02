@@ -5,7 +5,9 @@ from requests import Session
 from Sprites.ImageLoader import load_image
 from Entitys.Player import Player
 from Entitys.Enemy import Enemy
+from Entitys.Bullet import EnemyBullet
 from Timers.CustomTimer import Timer
+from Controllers.BulletController import BulletController
 
 
 class API:
@@ -23,13 +25,20 @@ class API:
             print('Что то не так в addUser', resp['error'])
             return
 
-    def thread_request_for_stat(self, player: Player, enemies: pygame.sprite.Group):
+    def thread_request_for_stat(self, player: Player, enemies: pygame.sprite.Group, bullet_controller: BulletController):
+        # if player.hp <= 0:
+        #     return
+        bullets = [i.rect.center for i in bullet_controller.my_bullets]
         data = {
             'id': player.id,
-            'pos': player.rect.center
+            'pos': player.rect.center,
+            'bullets': {'color': player.weapon.bullet.color,
+                        'pos': bullets}
         }
 
         resp = self.session.post(url=URL + '/tick', json=json.dumps(data)).json()
+
+        bullet_controller.other_bullets.empty()
 
         if 'code' in resp.keys():
             print('Что то не так в tick', resp['error'])
@@ -42,6 +51,11 @@ class API:
             # print('No other players')
             enemies.empty()
             return
+
+        for i in resp.values():
+            color = i['bullets']['color']
+            for j in i['bullets']['pos']:
+                bullet_controller.other_bullets.add(EnemyBullet(j, color))
 
         del_data = []
         for i in enemies:

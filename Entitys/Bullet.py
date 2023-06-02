@@ -4,7 +4,7 @@ import math
 
 class SimpleBullet(BackGroundSprite):
     def __init__(self, bc, velocity: float, stat: tuple, color='yellow'):
-        super(SimpleBullet, self).__init__(color, 10)
+        super(SimpleBullet, self).__init__(color=color, size=10)
 
         self.image.blit(self.background, (0, 0))
         self.rect = self.image.get_rect()
@@ -32,8 +32,17 @@ class SimpleBullet(BackGroundSprite):
         self.rect.y += self.vector[1]
 
 
+class EnemyBullet(BackGroundSprite):
+    def __init__(self, pos, color='yellow'):
+        super(EnemyBullet, self).__init__(color=color, size=10)
+
+        self.image.blit(self.background, (0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+
+
 class MachineGunBullet(SimpleBullet):
+    color = 'orange'
+
     def __init__(self, bc, stat):
-        super(MachineGunBullet, self).__init__(bc, 7, stat, 'orange')
-
-
+        super(MachineGunBullet, self).__init__(bc=bc, velocity=7, stat=stat, color=self.color)

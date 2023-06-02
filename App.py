@@ -23,8 +23,9 @@ class App:
 
         self.enemies = pygame.sprite.Group()
 
-        self.bullets = pygame.sprite.Group()
-        self.bullet_controller = BulletController(self.bullets)
+        self.my_bullets = pygame.sprite.Group()
+        self.other_bullets = pygame.sprite.Group()
+        self.bullet_controller = BulletController(self.my_bullets, self.other_bullets)
 
         self.plyer_group = pygame.sprite.Group()
         self.player = Player(load_image('Sprites/img/Player.png'), self.bullet_controller)
@@ -89,7 +90,7 @@ class App:
                 self.player.mouse[event.button] = 0
 
         if self.tick_from_start % (FPS // RPS) == 0:  # Отправка и получение координат игроков
-            thread = threading.Thread(target=lambda: self.api.thread_request_for_stat(self.player, self.enemies))
+            thread = threading.Thread(target=lambda: self.api.thread_request_for_stat(self.player, self.enemies, self.bullet_controller))
             thread.start()
 
         if self.tick_from_start % FPS == 0:  # Измерение пинга
@@ -103,12 +104,13 @@ class App:
 
         self.enemies.update()
         self.plyer_group.update()
-        self.bullets.update()
+        self.my_bullets.update()
 
 
         self.enemies.draw(self.surface)
         self.plyer_group.draw(self.surface)
-        self.bullets.draw(self.surface)
+        self.my_bullets.draw(self.surface)
+        self.other_bullets.draw(self.surface)
 
 
         self.surface.blit(self.statistics, (0, 0))
