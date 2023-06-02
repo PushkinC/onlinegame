@@ -18,7 +18,9 @@ class API:
     def in_server_init(self, player: Player):
         data = {
             'id': player.id,
-            'color': player.color
+            'color': player.color,
+            'bullets': {'color': player.weapon.bullet.color,
+                        'pos': []}
         }
         resp = self.session.post(url=URL + '/add', json=json.dumps(data)).json()
         if resp['code'] != 200:

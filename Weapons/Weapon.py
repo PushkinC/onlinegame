@@ -23,10 +23,8 @@ class Magazine:
             return self.count
 
     def reload(self, reload_time):
-        print('Начинаю перезарядку')
         time.sleep(reload_time)
         self.count = self.max
-        print('Закончил перезарядку')
 
 
 

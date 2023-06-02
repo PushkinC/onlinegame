@@ -12,13 +12,13 @@ class Server():
         self.players = {}
         self.retired_players = []
 
-    def add_User(self, id, color):
+    def add_User(self, id, color, bullets):
         print('add', id, color)
         if id in self.players:
             print('add error')
             return {'code': -1, 'error': 'user already exists'}
 
-        self.players[id] = {'pos': [500, 500], 'color': color}
+        self.players[id] = {'pos': [500, 500], 'color': color, 'bullets': bullets}
         print('add sacc')
         return {'code': 200, 'error': ''}
 
@@ -48,7 +48,7 @@ def addUser():
     data = request.get_json()
     if type(data) == str:
         data = json.loads(data)
-    resp = serv.add_User(data['id'], data['color'])
+    resp = serv.add_User(data['id'], data['color'], data['bullets'])
     return json.dumps(resp)
 
 

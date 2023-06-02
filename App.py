@@ -90,8 +90,8 @@ class App:
                 self.player.mouse[event.button] = 0
 
         if self.tick_from_start % (FPS // RPS) == 0:  # Отправка и получение координат игроков
-            thread = threading.Thread(target=lambda: self.api.thread_request_for_stat(self.player, self.enemies, self.bullet_controller))
-            thread.start()
+                    thread = threading.Thread(target=lambda: self.api.thread_request_for_stat(self.player, self.enemies, self.bullet_controller))
+                    thread.start()
 
         if self.tick_from_start % FPS == 0:  # Измерение пинга
             thread = threading.Thread(target=lambda: self.api.get_ping(self.ping))
@@ -99,12 +99,21 @@ class App:
             self.bullet_controller.check_out_bullets()
 
         if self.tick_from_start % (FPS // 4):
-            self.statistics = self.statisticsMonitor.draw(int(self.clock.get_fps()), self.ping[0], self.player)
+            self.statistics = self.statisticsMonitor.draw(int(self.clock.get_fps()), self.ping[0], self.player, self.bullet_controller)
             self.status = self.statusMonitor.draw(self.player)
 
         self.enemies.update()
         self.plyer_group.update()
         self.my_bullets.update()
+
+        a = pygame.sprite.spritecollide(self.player, self.bullet_controller.other_bullets, False)
+        for i in a:
+            print('get hit')
+            self.player.hp -= DAMAGE
+            self.bullet_controller.other_bullets.remove(i)
+
+        a = pygame.sprite.groupcollide(self.enemies, self.bullet_controller.my_bullets, False, True)
+
 
 
         self.enemies.draw(self.surface)

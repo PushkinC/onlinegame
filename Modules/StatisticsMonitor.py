@@ -1,6 +1,7 @@
 import pygame
 from Fonts.MultilineText import render_multiline_text
 from Entitys.Player import Player
+from Controllers.BulletController import BulletController
 
 
 class StatisticsMonitor:
@@ -9,12 +10,12 @@ class StatisticsMonitor:
         self.font = pygame.font.SysFont('Verdana', 12)
         self.visibility = 0
 
-    def draw(self, fps, ping, player: Player) -> pygame.Surface:
+    def draw(self, fps, ping, player: Player, bc: BulletController) -> pygame.Surface:
         if self.visibility:
             text = [f'FPS: {fps}, PING: {ping}',
                     f'Angle: {player.angle}',
                     f'Position: X: {player.rect.centerx}, Y: {player.rect.centery}',
-                    f'P',
+                    f'Count_bullets {len(bc.my_bullets) + len(bc.other_bullets)}',
                     f'Your_ID: {player.id}']
             stat = render_multiline_text(self.font, text, True, (0, 255, 0), 5)
             stat_rect = stat.get_rect()

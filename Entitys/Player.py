@@ -2,15 +2,16 @@ from typing import Any
 import math
 import pygame
 from Sprites.SimpleSprite import SimpleSprite
+from Controllers.BulletController import BulletController
 from const import *
 import random as rnd
 import string
-from Weapons.SimpleWeapon import AK_47
+from Weapons.Weapon import AK_47
 
 
 
 class Player(SimpleSprite):
-    def __init__(self, image, bc):
+    def __init__(self, image, bc: BulletController):
         super().__init__(image)
 
         self.id = self.__create_id()
@@ -18,7 +19,9 @@ class Player(SimpleSprite):
         self.chars = {}
         self.mouse = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 'r': 0}
         self.weapon = AK_47(bc)
+        self.bullets_controller = bc
         self.hp = 100
+        self.mask = pygame.mask.from_surface(self.image)
 
 
     def __create_id(self) -> str:
@@ -38,6 +41,8 @@ class Player(SimpleSprite):
         self.rotate(angle)
 
         self.weapon.update(self.mouse, (self.rect.center, angle, self.size))
+
+
 
 
 

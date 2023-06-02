@@ -1,3 +1,5 @@
+import pygame
+
 from Sprites.BackGroundSprite import BackGroundSprite
 import math
 
@@ -7,6 +9,7 @@ class SimpleBullet(BackGroundSprite):
         super(SimpleBullet, self).__init__(color=color, size=10)
 
         self.image.blit(self.background, (0, 0))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.center = stat[0]
         bc.add(self)
@@ -30,6 +33,7 @@ class SimpleBullet(BackGroundSprite):
     def update(self):
         self.rect.x += self.vector[0]
         self.rect.y += self.vector[1]
+
 
 
 class EnemyBullet(BackGroundSprite):
