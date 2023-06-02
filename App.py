@@ -58,6 +58,7 @@ class App:
                     self.player.chars['w'] = True
                 elif event.key == pygame.K_F1: # Отображение statisticsMonitor
                     self.statisticsMonitor.visibility = 1 - self.statisticsMonitor.visibility
+
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.player.chars['a'] = False
@@ -66,16 +67,17 @@ class App:
                 elif event.key == pygame.K_s:
                     self.player.chars['s'] = False
                 elif event.key == pygame.K_w:
-                    self.player.chars['w'] = False # #
+                    self.player.chars['w'] = False
 
         if self.tick_from_start % (FPS // RPS) == 0:  # Отправка и получение координат игроков
             thread = threading.Thread(target=lambda: self.api.thread_request_for_stat(self.player, self.enemies))
             thread.start()
 
-        if self.tick_from_start % FPS == 0:
+        if self.tick_from_start % FPS == 0:  # Измерение пинга
             thread = threading.Thread(target=lambda: self.api.get_ping(self.ping))
             thread.start()
-            self.statistics = self.statisticsMonitor.draw(int(self.clock.get_fps()), self.ping[0])
+        if self.tick_from_start % (FPS // 4):
+            self.statistics = self.statisticsMonitor.draw(int(self.clock.get_fps()), self.ping[0], self.player.angle)
 
         self.plyer_group.draw(self.surface)
         self.plyer_group.update()

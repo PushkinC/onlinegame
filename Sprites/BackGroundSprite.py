@@ -14,6 +14,12 @@ class BackGroundSprite(pygame.sprite.Sprite):
         self.background = pygame.Surface((self.size, self.size))
         self.background.set_colorkey('black')
         pygame.draw.circle(self.background, self.color, (self.size // 2, self.size // 2), self.size // 2)
+        self.image = pygame.Surface((self.size, self.size))
+        self.image.set_colorkey('black')
+
+    def clear(self):
+        self.image = pygame.Surface((self.size, self.size))
+        self.image.set_colorkey('black')
 
 
     def __create_random_color(self) -> tuple:
@@ -21,4 +27,5 @@ class BackGroundSprite(pygame.sprite.Sprite):
         g = rnd.randrange(60, 200)
         b = rnd.randrange(60, 200)
         return r, g, b
+
 
