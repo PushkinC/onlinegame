@@ -5,11 +5,13 @@ from requests import Session
 from Sprites.ImageLoader import load_image
 from Entitys.Player import Player
 from Entitys.Enemy import Enemy
+from Timers.CustomTimer import Timer
 
 
 class API:
     def __init__(self):
         self.session = Session()
+        self.timer_ping = Timer()
 
     def in_server_init(self, player: Player):
         data = {
@@ -64,3 +66,8 @@ class API:
             print('Что то не так в delUser', resp['error'])
             return -1
         return 200
+
+    def get_ping(self, container: list):
+        self.timer_ping.start()
+        self.session.get(url=URL + '/ping')
+        container[0] = int(round(self.timer_ping.stop(), 4) * 1000)
