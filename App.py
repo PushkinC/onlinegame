@@ -56,6 +56,8 @@ class App:
                     self.player.chars['s'] = True
                 elif event.key == pygame.K_w:
                     self.player.chars['w'] = True
+                elif event.key == pygame.K_F1: # Отображение statisticsMonitor
+                    self.statisticsMonitor.visibility = 1 - self.statisticsMonitor.visibility
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.player.chars['a'] = False
