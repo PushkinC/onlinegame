@@ -11,6 +11,7 @@ class Server():
     def __init__(self):
         self.players = {}
         self.retired_players = []
+        self.bullets = {}
 
     def add_User(self, id, color):
         print('add', id, color)
@@ -28,11 +29,12 @@ class Server():
         del self.players[id]
         return {'code': 200, 'error': ''}
 
-    def move(self, id, pos):
+    def move(self, id, pos, bullets):
         if id not in self.players:
             return {'code': -1, 'error': 'user not exists'}
 
         self.players[id]['pos'] = pos
+        self.bullets[id] = bullets
         return self.get_Data()
 
     def get_Data(self):
@@ -66,7 +68,7 @@ def tick():
     data = request.get_json()
     if type(data) == str:
         data = json.loads(data)
-    resp = serv.move(data['id'], data['pos'])
+    resp = serv.move(data['id'], data['pos'], data['bullets'])
     return json.dumps(resp)
 
 
