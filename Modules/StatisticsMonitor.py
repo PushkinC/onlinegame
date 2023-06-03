@@ -2,6 +2,7 @@ import pygame
 from Fonts.MultilineText import render_multiline_text
 from Entitys.Player import Player
 from Controllers.BulletController import BulletController
+from const import *
 
 
 class StatisticsMonitor:
@@ -12,7 +13,8 @@ class StatisticsMonitor:
 
     def draw(self, fps, ping, player: Player, bc: BulletController) -> pygame.Surface:
         if self.visibility:
-            text = [f'FPS: {fps}, PING: {ping}',
+            text = [f'FPS: {fps}, PING: {ping}, RPS: {RPS}',
+                    f'URL: {URL}',
                     f'Angle: {player.angle}',
                     f'Position: X: {player.rect.centerx}, Y: {player.rect.centery}',
                     f'Count_bullets {len(bc.my_bullets) + len(bc.other_bullets)}',
