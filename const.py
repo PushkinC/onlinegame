@@ -1,7 +1,6 @@
 WIDTH = HEIGHT = 1000
 URL = 'http://127.0.0.1:5050'
 FPS = 60
-RPS = 60
-SPEED = 4
+RPS = 30
+SPEED = 4 * 60 // FPS
 BACKGROUNDCOLOR = 'white'
-DAMAGE = 20

@@ -13,6 +13,13 @@ class BulletController:
     def add(self, bullet: SimpleBullet):
         self.my_bullets.add(bullet)
 
+    @staticmethod
+    def remove_by_id(bullets: list[str], group: pygame.sprite.Group):
+        for i in group:
+            if i.id in bullets:
+                group.remove(i)
+
+
     def check_out_bullets(self):
         for i in self.my_bullets:
             if WIDTH < i.rect.centerx or i.rect.centerx < 0 or HEIGHT < i.rect.centery or i.rect.centery < 0:

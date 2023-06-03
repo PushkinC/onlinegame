@@ -1,3 +1,5 @@
+import string
+import random as rnd
 import pygame
 
 from Sprites.BackGroundSprite import BackGroundSprite
@@ -19,6 +21,12 @@ class SimpleBullet(BackGroundSprite):
         radius = self.calculate_radius(stat[1], stat[2])
         self.rect.centerx += radius[0]
         self.rect.centery += radius[1]
+        self.id = self.__create_id()
+
+    def __create_id(self) -> str:
+        letters = string.ascii_lowercase
+        rand_string = ''.join(rnd.choice(letters) for i in range(20))
+        return rand_string
 
     def calculate_vector(self, angle):
         x = -math.sin(math.radians(angle)) * self.velocity
@@ -37,16 +45,20 @@ class SimpleBullet(BackGroundSprite):
 
 
 class EnemyBullet(BackGroundSprite):
-    def __init__(self, pos, color='yellow'):
-        super(EnemyBullet, self).__init__(color=color, size=10)
-
+    def __init__(self, id, pos, damage, size, color='yellow'):
+        super(EnemyBullet, self).__init__(color=color, size=size)
+        self.damage = damage
         self.image.blit(self.background, (0, 0))
         self.rect = self.image.get_rect()
         self.rect.center = pos
+        self.id = id
+
 
 
 class MachineGunBullet(SimpleBullet):
-    color = 'orange'
+    # color = 'orange'
+    # damage = 20
 
-    def __init__(self, bc, stat):
-        super(MachineGunBullet, self).__init__(bc=bc, velocity=7, stat=stat, color=self.color)
+    def __init__(self, bc, stat, damage=20):
+        super(MachineGunBullet, self).__init__(bc=bc, velocity=7, stat=stat, color='orange')
+        self.damage = damage

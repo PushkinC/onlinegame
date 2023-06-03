@@ -69,6 +69,8 @@ class App:
                     self.player.chars['w'] = True
                 elif event.key == pygame.K_r:
                     self.player.mouse['r'] = 1
+                elif event.key == pygame.K_h:
+                    self.api.heal(self.player, 100)
                 elif event.key == pygame.K_F1: # Отображение statisticsMonitor
                     self.statisticsMonitor.visibility = 1 - self.statisticsMonitor.visibility
 
@@ -106,13 +108,13 @@ class App:
         self.plyer_group.update()
         self.my_bullets.update()
 
-        a = pygame.sprite.spritecollide(self.player, self.bullet_controller.other_bullets, False)
-        for i in a:
-            print('get hit')
-            self.player.hp -= DAMAGE
-            self.bullet_controller.other_bullets.remove(i)
-
-        a = pygame.sprite.groupcollide(self.enemies, self.bullet_controller.my_bullets, False, True)
+        # a = pygame.sprite.spritecollide(self.player, self.bullet_controller.other_bullets, False)
+        # for i in a:
+        #     print('get hit')
+        #     self.player.hp -= DAMAGE
+        #     self.bullet_controller.other_bullets.remove(i)
+        #
+        # a = pygame.sprite.groupcollide(self.enemies, self.bullet_controller.my_bullets, False, True)
 
 
 

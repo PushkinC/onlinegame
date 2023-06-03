@@ -16,11 +16,15 @@ class API:
         self.timer_ping = Timer()
 
     def in_server_init(self, player: Player):
+
         data = {
             'id': player.id,
             'color': player.color,
-            'bullets': {'color': player.weapon.bullet.color,
-                        'pos': []}
+            'size': player.size,
+            'hp': player.hp,
+            'pos': player.rect.center,
+            'deleted_bullets': [],
+            'bullets': {}
         }
         resp = self.session.post(url=URL + '/add', json=json.dumps(data)).json()
         if resp['code'] != 200:
@@ -28,14 +32,10 @@ class API:
             return
 
     def thread_request_for_stat(self, player: Player, enemies: pygame.sprite.Group, bullet_controller: BulletController):
-        # if player.hp <= 0:
-        #     return
-        bullets = [i.rect.center for i in bullet_controller.my_bullets]
         data = {
             'id': player.id,
             'pos': player.rect.center,
-            'bullets': {'color': player.weapon.bullet.color,
-                        'pos': bullets}
+            'bullets': {i.id: {'color': i.color, 'size': i.size, 'damage': i.damage, 'pos': i.rect.center} for i in bullet_controller.my_bullets}
         }
 
         resp = self.session.post(url=URL + '/tick', json=json.dumps(data)).json()
@@ -46,7 +46,11 @@ class API:
             print('Что то не так в tick', resp['error'])
             return
 
-        if player.id in resp.keys():
+        player.hp = resp[player.id]['hp']  # Устанавливаю hp как на сервере
+
+        bullet_controller.remove_by_id(resp[player.id]['deleted_bullets'], bullet_controller.my_bullets)
+
+        if player.id in resp.keys():  # Удаляю из ответа от сервера player
             del resp[player.id]
 
         if len(resp.keys()) == 0:
@@ -54,10 +58,11 @@ class API:
             enemies.empty()
             return
 
-        for i in resp.values():
-            color = i['bullets']['color']
-            for j in i['bullets']['pos']:
-                bullet_controller.other_bullets.add(EnemyBullet(j, color))
+        for i in resp.keys():  # Добавляю вражеские пули
+            a = resp[i]['bullets']
+            for j in resp[i]['bullets'].keys():
+                bullet_controller.other_bullets.add(EnemyBullet(j, a[j]['pos'], a[j]['damage'], a[j]['size'], a[j]['color']))
+
 
         del_data = []
         for i in enemies:
@@ -87,3 +92,10 @@ class API:
         self.timer_ping.start()
         self.session.get(url=URL + '/ping')
         container[0] = int(round(self.timer_ping.stop(), 4) * 1000)
+
+    def heal(self, player: Player, heal: int):
+        data = {
+            'id': player.id,
+            'heal': heal
+        }
+        self.session.post(URL + '/heal', json=json.dumps(data))
