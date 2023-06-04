@@ -19,6 +19,7 @@ class API:
 
         data = {
             'id': player.id,
+            'name': player.name,
             'color': player.color,
             'size': player.size,
             'hp': player.hp,
@@ -76,12 +77,11 @@ class API:
             del resp[i]
 
         for key, val in resp.items():
-            enemies.add(Enemy(image=load_image('Sprites/img/Enemy.png'), color=val['color'], pos=val['pos'], id=key))
+            enemies.add(Enemy(image=load_image('Sprites/img/Enemy.png'), color=val['color'], pos=val['pos'], id=key, name=val['name']))
 
     def out(self, player: Player):
         data = {'id': player.id}
         resp = self.session.post(url=URL + '/del', json=json.dumps(data)).json()
-        # self.timer.save('stat/statThread.txt')
 
         if resp['code'] != 200:
             print('Что то не так в delUser', resp['error'])

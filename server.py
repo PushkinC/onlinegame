@@ -14,13 +14,14 @@ app = flask.Flask(__name__)
 
 class Server():
     def __init__(self):
-        self.players = {}  # {id: {pos, color, size, hp, deleted_bullets: [], bullets: {id: {color, size, damage, pos})}}
+        self.players = {}  # {id: {name, pos, color, size, hp, deleted_bullets: [], bullets: {id: {color, size, damage, pos})}}
 
     def add_User(self, data):
         if data['id'] in self.players:
             return {'code': -1, 'error': 'user already exists'}
 
         self.players[data['id']] = {
+            'name': data['name'],
             'pos': [500, 500],
             'color': data['color'],
             'bullets': data['bullets'],

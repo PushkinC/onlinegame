@@ -1,6 +1,22 @@
+import json
+
+
+with open('Saves/OpenSettings.json', 'rt') as f:
+    data = json.load(f)
+
+
+
+
+
+
+URL = data['URL']
+FPS = data['FPS']
+NAME = data['name']
+if FPS < 30:
+    RPS = FPS
+else:
+    RPS = 30
+
 WIDTH = HEIGHT = 1000
-URL = 'http://127.0.0.1:5050'
-FPS = 60
-RPS = 30
 SPEED = 4 * 60 // FPS
 BACKGROUNDCOLOR = 'white'

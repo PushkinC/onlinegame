@@ -1,7 +1,7 @@
 import string
 import random as rnd
 import pygame
-
+from const import *
 from Sprites.BackGroundSprite import BackGroundSprite
 import math
 
@@ -60,5 +60,5 @@ class MachineGunBullet(SimpleBullet):
     # damage = 20
 
     def __init__(self, bc, stat, damage=20):
-        super(MachineGunBullet, self).__init__(bc=bc, velocity=7, stat=stat, color='orange')
+        super(MachineGunBullet, self).__init__(bc=bc, velocity=7 * 60 // FPS, stat=stat, color='orange')
         self.damage = damage

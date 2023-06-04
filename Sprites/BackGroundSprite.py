@@ -16,6 +16,7 @@ class BackGroundSprite(pygame.sprite.Sprite):
         pygame.draw.circle(self.background, self.color, (self.size // 2, self.size // 2), self.size // 2)
         self.image = pygame.Surface((self.size, self.size))
         self.image.set_colorkey('black')
+        self.rect = self.image.get_rect()
 
     def clear(self):
         self.image = pygame.Surface((self.size, self.size))

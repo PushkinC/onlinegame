@@ -1,7 +1,7 @@
 from typing import Any
 import math
 import pygame
-from Sprites.SimpleSprite import SimpleSprite
+from Sprites.PlayerSprite import PlayerSprite
 from Controllers.BulletController import BulletController
 from const import *
 import random as rnd
@@ -10,9 +10,9 @@ from Weapons.Weapon import AK_47
 
 
 
-class Player(SimpleSprite):
+class Player(PlayerSprite):
     def __init__(self, image, bc: BulletController):
-        super().__init__(image)
+        super().__init__(image, name=NAME)
 
         self.id = self.__create_id()
         self.rect.center = [500, 500]
@@ -41,11 +41,6 @@ class Player(SimpleSprite):
         self.rotate(angle)
 
         self.weapon.update(self.mouse, (self.rect.center, angle, self.size))
-
-
-
-
-
 
 
     def move(self, key):
