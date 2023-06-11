@@ -1,6 +1,7 @@
+import json
 import threading
 import time
-from Entitys.Bullet import MachineGunBullet, SimpleBullet
+from Entitys.Bullet import SimpleBullet, create_bullet
 from Controllers.BulletController import BulletController
 from const import *
 
@@ -8,6 +9,8 @@ from const import *
 SINGLFIRE = 0
 AUTOFIRE = 1
 TRIPLEFIRE = 2
+SINGLEAUTO = 3
+SINGLETRIPLE = 4
 
 
 class Magazine:
@@ -18,9 +21,9 @@ class Magazine:
     def fire(self):
         if self.count:
             self.count -= 1
-            return self.count
+            return True
         else:
-            return self.count
+            return False
 
     def reload(self, reload_time):
         time.sleep(reload_time)
@@ -30,14 +33,17 @@ class Magazine:
 
 
 class SimpleWeapon:
-    def __init__(self, bc:BulletController, bullet: SimpleBullet, reload_time=2, magazine_bullet=30, rate_of_fire=10, fire_mode=SINGLFIRE):
+    def __init__(self, bullet: SimpleBullet, reload_time: int, magazine_bullet: int, rate_of_fire: int, fire_mode: int):
         self.magazine = Magazine(magazine_bullet)
         self.rate_of_fire = rate_of_fire
         self.fire_mode = fire_mode
+        self.cur_fire_mode = fire_mode
+        if fire_mode > 2:
+            self.cur_fire_mode = SINGLFIRE
         self.__first_shot = True
+        self.__one_mouse_three_click = True
         self.tick = 0
         self.bullet = bullet
-        self.bullet_controller = bc
         self.reload_time = reload_time
         self.reloading = False
 
@@ -52,42 +58,57 @@ class SimpleWeapon:
     def update(self, mouse: dict, stat):
         self.tick += 1
         if mouse[1]:
-            if self.fire_mode == SINGLFIRE:
+            if self.cur_fire_mode == SINGLFIRE:
                 if self.__first_shot:
+                    print('shot', self.__first_shot)
+                    self.__first_shot = False
                     if self.magazine.fire():
-                        self.__first_shot = False
-                        self.bullet(self.bullet_controller, stat)
+                        self.bullet(stat)
                         self.reloading = True
                     else:
                         self.reload()
 
 
-            elif self.fire_mode == AUTOFIRE:
+            elif self.cur_fire_mode == AUTOFIRE:
                 if self.tick % (FPS // self.rate_of_fire) == 0:
                     if self.magazine.fire():
-                        self.bullet(self.bullet_controller, stat)
+                        self.bullet(stat)
                         self.reloading = True
                     else:
                         self.reload()
+        else:
+            self.__first_shot = True
+
+        if mouse[3]:
+            if self.__one_mouse_three_click:
+                self.__one_mouse_three_click = False
+                if self.fire_mode == SINGLEAUTO:
+                    if self.cur_fire_mode == SINGLFIRE:
+                        self.cur_fire_mode = AUTOFIRE
+                    else:
+                        self.cur_fire_mode = SINGLFIRE
+                elif self.fire_mode == SINGLETRIPLE:
+                    if self.cur_fire_mode == SINGLFIRE:
+                        self.cur_fire_mode = TRIPLEFIRE
+                    else:
+                        self.cur_fire_mode = SINGLFIRE
+            print(self.cur_fire_mode)
+        else:
+            self.__one_mouse_three_click = True
 
         if mouse['r']:
             self.reload()
 
-        else:
-            self.__first_shot = True
 
 
+def load_weapon(name: str, bc: BulletController) -> SimpleWeapon:
+    with open('Weapons/Weapons.json', 'rt') as f:
+        weapons = json.load(f)
+    weapon = weapons[name]
+    bullet = create_bullet(weapon['bullet'], bc)
 
-class Automachine(SimpleWeapon):
-    def __init__(self, magazine_bullet, rate_of_fire, bullet, bc):
-        super(Automachine, self).__init__(bc=bc, bullet=bullet, magazine_bullet=magazine_bullet, rate_of_fire=rate_of_fire, fire_mode=AUTOFIRE)
+    return SimpleWeapon(bullet=bullet, reload_time=weapon['reload_time'], magazine_bullet=weapon['magazine_bullet'], rate_of_fire=weapon['rate_of_fire'], fire_mode=weapon['fire_mode'])
 
 
-
-
-
-class AK_47(Automachine):
-    def __init__(self, bc):
-        super(AK_47, self).__init__(magazine_bullet=30, rate_of_fire=10, bullet=MachineGunBullet, bc=bc)
 
 

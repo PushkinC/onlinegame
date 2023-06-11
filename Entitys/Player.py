@@ -6,7 +6,7 @@ from Controllers.BulletController import BulletController
 from const import *
 import random as rnd
 import string
-from Weapons.Weapon import AK_47
+from Weapons.Weapon import load_weapon
 
 
 
@@ -18,7 +18,8 @@ class Player(PlayerSprite):
         self.rect.center = [500, 500]
         self.chars = {}
         self.mouse = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 'r': 0}
-        self.weapon = AK_47(bc)
+        with open('Saves/PlayerData.json', 'rt') as f:
+            self.weapon = load_weapon(json.load(f)['weapon'], bc)
         self.bullets_controller = bc
         self.hp = 100
         self.mask = pygame.mask.from_surface(self.image)

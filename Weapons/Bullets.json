@@ -1,0 +1,13 @@
+{
+  "MachineGunBullet": {
+    "velocity": 7,
+    "damage": 20,
+    "color": "orange"
+  },
+
+  "PistolBullet": {
+    "velocity": 7,
+    "damage": 15,
+    "color": "red"
+  }
+}

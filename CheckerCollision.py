@@ -1,5 +1,4 @@
 import pygame
-import json
 from const import *
 from requests import Session
 

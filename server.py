@@ -59,7 +59,7 @@ class Server():
             if i not in self.players.keys():
                 print('ААААААААААААААААААААААААААААААААААААААААААААА' * 10)
 
-            self.players[i]['hp'] -= data[i]['damage']
+            self.players[i]['hp'] = max(self.players[i]['hp'] - data[i]['damage'], 0)
 
             for j in data[i]['bullets']:
                 if j in self.players[i]['bullets']:

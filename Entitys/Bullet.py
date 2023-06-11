@@ -7,7 +7,7 @@ import math
 
 
 class SimpleBullet(BackGroundSprite):
-    def __init__(self, bc, velocity: float, stat: tuple, color='yellow'):
+    def __init__(self, bc, velocity: float, stat: tuple, damage:int, color='yellow'):
         super(SimpleBullet, self).__init__(color=color, size=10)
 
         self.image.blit(self.background, (0, 0))
@@ -16,6 +16,7 @@ class SimpleBullet(BackGroundSprite):
         self.rect.center = stat[0]
         bc.add(self)
         self.velocity = velocity
+        self.damage = damage
 
         self.vector = self.calculate_vector(stat[1])
         radius = self.calculate_radius(stat[1], stat[2])
@@ -54,11 +55,9 @@ class EnemyBullet(BackGroundSprite):
         self.id = id
 
 
+def create_bullet(name: str, bc):
+    with open('Weapons/Bullets.json', 'rt') as f:
+        data = json.load(f)
+    bullet = data[name]
+    return lambda stat: SimpleBullet(bc=bc, velocity=bullet['velocity'], stat=stat, damage=bullet['damage'], color=bullet['color'])
 
-class MachineGunBullet(SimpleBullet):
-    # color = 'orange'
-    # damage = 20
-
-    def __init__(self, bc, stat, damage=20):
-        super(MachineGunBullet, self).__init__(bc=bc, velocity=7 * 60 // FPS, stat=stat, color='orange')
-        self.damage = damage
