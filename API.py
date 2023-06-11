@@ -69,6 +69,7 @@ class API:
         for i in enemies:
             if i.id in resp.keys():
                 i.set_pos(*resp[i.id]['pos'])
+                i.hp = resp[i.id]['hp']
                 del_data.append(i.id)
             else:
                 enemies.remove(i)
@@ -77,7 +78,7 @@ class API:
             del resp[i]
 
         for key, val in resp.items():
-            enemies.add(Enemy(image=load_image('Sprites/img/Enemy.png'), color=val['color'], pos=val['pos'], id=key, name=val['name']))
+            enemies.add(Enemy(image=load_image('Sprites/img/Enemy.png'), color=val['color'], pos=val['pos'], id=key, name=val['name'], hp=val['hp']))
 
     def out(self, player: Player):
         data = {'id': player.id}

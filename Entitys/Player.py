@@ -1,7 +1,7 @@
 from typing import Any
 import math
 import pygame
-from Sprites.PlayerSprite import PlayerSprite
+from Sprites.EntitySprite import PlayerSprite
 from Controllers.BulletController import BulletController
 from const import *
 import random as rnd

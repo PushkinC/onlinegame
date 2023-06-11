@@ -1,9 +1,7 @@
 from App import App
 
 if __name__ == '__main__':
-    import Screens.InputScreen
-    app = App('main')
-    print('asdasdasdsad')
+    app = App('main2')
 
     while app.running:
         app.tick()
