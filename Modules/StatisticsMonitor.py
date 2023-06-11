@@ -9,6 +9,7 @@ class StatisticsMonitor:
     def __init__(self):
         self.padding = {'top': 5, 'bottom': 5, 'left': 5, 'right': 5}
         self.font = pygame.font.SysFont('Verdana', 12)
+        self.font.bold = True
         self.visibility = 0
 
     def draw(self, fps, ping, player: Player, bc: BulletController) -> pygame.Surface:
@@ -17,9 +18,15 @@ class StatisticsMonitor:
                     f'URL: {URL}',
                     f'Angle: {player.angle}',
                     f'Position: X: {player.rect.centerx}, Y: {player.rect.centery}',
-                    f'Count_bullets {len(bc.my_bullets) + len(bc.other_bullets)}',
+                    f'Count_bullets_on_screen: {len(bc.my_bullets) + len(bc.other_bullets)}',
+                    f'Weapon',
+                    f'       name: {player.weapon.name}',
+                    f'       rate_of_fire: {player.weapon.rate_of_fire}',
+                    f'       reload_time: {player.weapon.reload_time}',
+                    f'       fire_mode: {player.weapon.fire_mode}',
+                    f'       cur_fire_mode: {player.weapon.cur_fire_mode}',
                     f'Your_ID: {player.id}']
-            stat = render_multiline_text(self.font, text, True, (0, 255, 0), 5)
+            stat = render_multiline_text(self.font, text, True, (255, 255, 0), 5)
             stat_rect = stat.get_rect()
             background = pygame.Surface((stat_rect.w + self.padding['top'] + self.padding['bottom'],
                                          stat_rect.h + self.padding['left'] + self.padding['right']),

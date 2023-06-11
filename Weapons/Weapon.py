@@ -1,6 +1,7 @@
 import json
 import threading
 import time
+
 from Entitys.Bullet import SimpleBullet, create_bullet
 from Controllers.BulletController import BulletController
 from const import *
@@ -14,9 +15,10 @@ SINGLETRIPLE = 4
 
 
 class Magazine:
-    def __init__(self, max: int):
+    def __init__(self, max: int, sm):
         self.max = max
         self.count = max
+        self.statusMonitor = sm
 
     def fire(self):
         if self.count:
@@ -26,15 +28,18 @@ class Magazine:
             return False
 
     def reload(self, reload_time):
+        self.statusMonitor.reloading = True
         time.sleep(reload_time)
         self.count = self.max
+        self.statusMonitor.reloading = False
 
 
 
 
 class SimpleWeapon:
-    def __init__(self, bullet: SimpleBullet, reload_time: int, magazine_bullet: int, rate_of_fire: int, fire_mode: int):
-        self.magazine = Magazine(magazine_bullet)
+    def __init__(self, bullet: SimpleBullet, reload_time: int, magazine_bullet: int, rate_of_fire: int, fire_mode: int, sm, name):
+        self.magazine = Magazine(magazine_bullet, sm)
+        self.name = name
         self.rate_of_fire = rate_of_fire
         self.fire_mode = fire_mode
         self.cur_fire_mode = fire_mode
@@ -125,13 +130,13 @@ class SimpleWeapon:
 
 
 
-def load_weapon(name: str, bc: BulletController) -> SimpleWeapon:
+def load_weapon(name: str, bc: BulletController, sm) -> SimpleWeapon:
     with open('Weapons/Weapons.json', 'rt') as f:
         weapons = json.load(f)
     weapon = weapons[name]
     bullet = create_bullet(weapon['bullet'], bc)
 
-    return SimpleWeapon(bullet=bullet, reload_time=weapon['reload_time'], magazine_bullet=weapon['magazine_bullet'], rate_of_fire=weapon['rate_of_fire'], fire_mode=weapon['fire_mode'])
+    return SimpleWeapon(bullet=bullet, reload_time=weapon['reload_time'], magazine_bullet=weapon['magazine_bullet'], rate_of_fire=weapon['rate_of_fire'], fire_mode=weapon['fire_mode'], sm=sm, name=name)
 
 
 

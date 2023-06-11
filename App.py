@@ -20,6 +20,8 @@ class App:
         self.running = True
 
 
+        self.statisticsMonitor = StatisticsMonitor()
+        self.statusMonitor = StatusMonitor()
 
         self.enemies = pygame.sprite.Group()
 
@@ -28,7 +30,7 @@ class App:
         self.bullet_controller = BulletController(self.my_bullets, self.other_bullets)
 
         self.player_group = pygame.sprite.Group()
-        self.player = Player(load_image('Sprites/img/Player.png'), self.bullet_controller)
+        self.player = Player(load_image('Sprites/img/Player.png'), self.bullet_controller, self.statusMonitor)
         self.player_group.add(self.player)
 
         self.tick_from_start = 0
@@ -41,9 +43,6 @@ class App:
 
         self.api = API()
         self.api.in_server_init(self.player)
-
-        self.statisticsMonitor = StatisticsMonitor()
-        self.statusMonitor = StatusMonitor()
 
 
 

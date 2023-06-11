@@ -11,15 +11,15 @@ from Weapons.Weapon import load_weapon
 
 
 class Player(PlayerSprite):
-    def __init__(self, image, bc: BulletController):
+    def __init__(self, image, bc: BulletController, sm):
         super().__init__(image, name=NAME)
 
         self.id = self.__create_id()
-        self.rect.center = [500, 500]
+        self.rect.center = [WIDTH // 2, HEIGHT // 2]
         self.chars = {}
         self.mouse = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 'r': 0}
         with open('Saves/PlayerData.json', 'rt') as f:
-            self.weapon = load_weapon(json.load(f)['weapon'], bc)
+            self.weapon = load_weapon(json.load(f)['weapon'], bc, sm)
         self.bullets_controller = bc
         self.hp = 100
         self.mask = pygame.mask.from_surface(self.image)
