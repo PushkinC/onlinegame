@@ -42,6 +42,8 @@ class SimpleWeapon:
             self.cur_fire_mode = SINGLFIRE
         self.__first_shot = True
         self.__one_mouse_three_click = True
+        self.__last_shot = 0
+        self.__triple = 4
         self.tick = 0
         self.bullet = bullet
         self.reload_time = reload_time
@@ -70,14 +72,36 @@ class SimpleWeapon:
 
 
             elif self.cur_fire_mode == AUTOFIRE:
-                if self.tick % (FPS // self.rate_of_fire) == 0:
+                if self.tick - self.__last_shot > FPS / self.rate_of_fire:
                     if self.magazine.fire():
+                        self.__last_shot = self.tick
                         self.bullet(stat)
                         self.reloading = True
                     else:
                         self.reload()
+
+            elif self.cur_fire_mode == TRIPLEFIRE:
+                if self.__first_shot:
+                    if self.tick - self.__last_shot > FPS / self.rate_of_fire * 3:
+                        self.__first_shot = False
+                        self.__triple = 0
+
+
+
+
         else:
             self.__first_shot = True
+
+        if self.__triple < 3:
+            if self.tick - self.__last_shot > FPS / self.rate_of_fire:
+                if self.magazine.fire():
+                    self.__last_shot = self.tick
+                    self.bullet(stat)
+                    self.__triple += 1
+                    self.reloading = True
+                else:
+                    self.__triple = 4
+                    self.reload()
 
         if mouse[3]:
             if self.__one_mouse_three_click:

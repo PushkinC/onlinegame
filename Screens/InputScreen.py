@@ -94,7 +94,7 @@ inp_weapon.pack(fill='x', padx=5, expand=True)
 
 
 accept_btn = ttk.Button(app, command=btn_click)
-accept_btn['text'] = 'Начать'
+accept_btn['text'] = 'Готово'
 
 accept_btn.pack()
 

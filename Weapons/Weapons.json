@@ -9,7 +9,7 @@
 
   "Glock-18": {
     "magazine_bullet": 17,
-    "rate_of_fire": 0,
+    "rate_of_fire": 30,
     "reload_time": 2,
     "fire_mode": 4,
     "bullet": "PistolBullet"

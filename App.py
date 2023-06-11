@@ -123,7 +123,6 @@ class App:
         self.my_bullets.draw(self.surface)
         self.other_bullets.draw(self.surface)
 
-        self.surface.blit(pygame.Surface((10, 10)), (495, 495))
 
         self.surface.blit(self.statistics, (0, 0))
         self.surface.blit(self.status, (WIDTH - self.status.get_rect().w, HEIGHT - self.status.get_rect().h))
