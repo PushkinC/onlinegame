@@ -2,15 +2,15 @@
   "AK-47": {
     "magazine_bullet": 30,
     "rate_of_fire": 10,
-    "reload_time": 2,
+    "reload_time": 2.5,
     "fire_mode": 3,
     "bullet": "MachineGunBullet"
   },
 
   "Glock-18": {
     "magazine_bullet": 17,
-    "rate_of_fire": 30,
-    "reload_time": 2,
+    "rate_of_fire": 20,
+    "reload_time": 2.27,
     "fire_mode": 4,
     "bullet": "PistolBullet"
   }

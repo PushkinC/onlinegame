@@ -1,6 +1,7 @@
 import json
 import threading
 import time
+from Controllers.WeaponAudioController import WeaponAudioController
 
 from Entitys.Bullet import SimpleBullet, create_bullet
 from Controllers.BulletController import BulletController
@@ -37,9 +38,10 @@ class Magazine:
 
 
 class SimpleWeapon:
-    def __init__(self, bullet: SimpleBullet, reload_time: int, magazine_bullet: int, rate_of_fire: int, fire_mode: int, sm, name):
+    def __init__(self, bullet: SimpleBullet, reload_time: int, magazine_bullet: int, rate_of_fire: int, fire_mode: int, sm, name, ac: WeaponAudioController):
         self.magazine = Magazine(magazine_bullet, sm)
         self.name = name
+        self.audioController = ac
         self.rate_of_fire = rate_of_fire
         self.fire_mode = fire_mode
         self.cur_fire_mode = fire_mode
@@ -57,6 +59,8 @@ class SimpleWeapon:
     def reload(self):
         if self.reloading:
             self.reloading = False
+            self.audioController.clipempty.play()
+            self.audioController.reload.play()
             thread = threading.Thread(target=lambda: self.magazine.reload(self.reload_time))
             thread.start()
 
@@ -70,6 +74,7 @@ class SimpleWeapon:
                     print('shot', self.__first_shot)
                     self.__first_shot = False
                     if self.magazine.fire():
+                        self.audioController.fire.play()
                         self.bullet(stat)
                         self.reloading = True
                     else:
@@ -80,6 +85,7 @@ class SimpleWeapon:
                 if self.tick - self.__last_shot > FPS / self.rate_of_fire:
                     if self.magazine.fire():
                         self.__last_shot = self.tick
+                        self.audioController.fire.play()
                         self.bullet(stat)
                         self.reloading = True
                     else:
@@ -91,9 +97,6 @@ class SimpleWeapon:
                         self.__first_shot = False
                         self.__triple = 0
 
-
-
-
         else:
             self.__first_shot = True
 
@@ -102,6 +105,7 @@ class SimpleWeapon:
                 if self.magazine.fire():
                     self.__last_shot = self.tick
                     self.bullet(stat)
+                    self.audioController.fire.play()
                     self.__triple += 1
                     self.reloading = True
                 else:
@@ -121,7 +125,6 @@ class SimpleWeapon:
                         self.cur_fire_mode = TRIPLEFIRE
                     else:
                         self.cur_fire_mode = SINGLFIRE
-            print(self.cur_fire_mode)
         else:
             self.__one_mouse_three_click = True
 
@@ -135,8 +138,9 @@ def load_weapon(name: str, bc: BulletController, sm) -> SimpleWeapon:
         weapons = json.load(f)
     weapon = weapons[name]
     bullet = create_bullet(weapon['bullet'], bc)
+    audioController = WeaponAudioController(name)
 
-    return SimpleWeapon(bullet=bullet, reload_time=weapon['reload_time'], magazine_bullet=weapon['magazine_bullet'], rate_of_fire=weapon['rate_of_fire'], fire_mode=weapon['fire_mode'], sm=sm, name=name)
+    return SimpleWeapon(bullet=bullet, reload_time=weapon['reload_time'], magazine_bullet=weapon['magazine_bullet'], rate_of_fire=weapon['rate_of_fire'], fire_mode=weapon['fire_mode'], sm=sm, name=name, ac=audioController)
 
 
 

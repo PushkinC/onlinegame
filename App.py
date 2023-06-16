@@ -11,8 +11,11 @@ from Controllers.BulletController import BulletController
 
 class App:
     def __init__(self, title):
+        pygame.mixer.pre_init(44100, -16, 1, 512)
         pygame.init()
         pygame.font.init()
+
+        pygame.mixer.set_num_channels(16)
 
         self.surface = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(title)
@@ -54,8 +57,8 @@ class App:
         self.clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                if self.api.out(self.player) == 200:
-                    self.running = False
+                self.api.out(self.player)
+                self.running = False
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
